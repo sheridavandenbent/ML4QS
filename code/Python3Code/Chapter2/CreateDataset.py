@@ -89,9 +89,7 @@ class CreateDataset:
 
         # Convert timestamps to dates
         if(datetimefix):
-            dataset[start_timestamp_col] += 1591260535
             dataset[start_timestamp_col] = pd.to_datetime(dataset[start_timestamp_col], unit='s') #adjustment for non-timestamp data
-            dataset[end_timestamp_col] += 1591260535
             dataset[end_timestamp_col] = pd.to_datetime(dataset[end_timestamp_col], unit='s') #adjustment for non-timestamp data
         else:
             dataset[start_timestamp_col] = pd.to_datetime(dataset[start_timestamp_col])
@@ -126,6 +124,7 @@ class CreateDataset:
                 self.data_table.loc[relevant_rows.index, str(value_col) + str(value)] = 1
             else:
                 raise ValueError("Unknown aggregation '" + aggregation + "'")
+
 
     # This function returns the column names that have one of the strings expressed by 'ids' in the column name.
     def get_relevant_columns(self, ids):

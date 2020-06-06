@@ -101,7 +101,6 @@ class VisualizeDataset:
             xar[i].tick_params(axis='y', labelsize=10)
             xar[i].legend(relevant_cols, fontsize='xx-small', numpoints=1, loc='upper center',
                           bbox_to_anchor=(0.5, 1.3), ncol=len(relevant_cols), fancybox=True, shadow=True)
-
             xar[i].set_ylim([min(min_values) - 0.1*(max(max_values) - min(min_values)),
                              max(max_values) + 0.1*(max(max_values) - min(min_values))])
 
