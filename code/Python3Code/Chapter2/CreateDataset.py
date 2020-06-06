@@ -46,10 +46,11 @@ class CreateDataset:
 
         # Convert timestamps to dates
         if(datetimefix):
-            dataset[timestamp_col] += 1591260535
+            dataset[timestamp_col] = dataset[timestamp_col] + 1591361220
             dataset[timestamp_col] = pd.to_datetime(dataset[timestamp_col], unit='s') #adjustment for non-timestamp data
         else:
             dataset[timestamp_col] = pd.to_datetime(dataset[timestamp_col])
+
 
         # Create a table based on the times found in the dataset
         if self.data_table is None:
@@ -67,11 +68,10 @@ class CreateDataset:
                                            timedelta(milliseconds=self.granularity)))
             ]
             for col in value_cols:
-                # Take the average value
+                # Take the average value 
                 if len(relevant_rows) > 0:
                     if aggregation == 'avg':
                         self.data_table.loc[self.data_table.index[i], str(prefix)+str(col)] = np.average(relevant_rows[col])
-                        print(np.average(relevant_rows[col]))
                     else:
                         raise ValueError(f"Unknown aggregation {aggregation}")
                 else:

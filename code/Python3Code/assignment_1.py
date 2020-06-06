@@ -38,7 +38,7 @@ RESULT_FNAME = sys.argv[2] if len(sys.argv) > 2 else 'chapter2_result.csv'
 
 # Set a granularity (the discrete step size of our time series data). We'll use a course-grained granularity of one
 # instance per minute, and a fine-grained one with four instances per second.
-GRANULARITIES = [250]
+GRANULARITIES = [10000, 20000]
 
 # We can call Path.mkdir(exist_ok=True) to make any required directories if they don't already exist.
 [path.mkdir(exist_ok=True, parents=True) for path in [DATASET_PATH, RESULT_PATH]]
@@ -53,12 +53,12 @@ for milliseconds_per_instance in GRANULARITIES:
 
     # Add the selected measurements to it.
 
-    dataset.add_event_dataset('labels.csv', 'label_start', 'label_end', 'label', 'binary', True)
     dataset.add_numerical_dataset('accelerometer.csv', 'timestamp', ['x','y','z'], 'avg', 'acc_phone_', True)
+    dataset.add_event_dataset('labels.csv', 'label_start', 'label_end', 'label', 'binary', True)
     dataset.add_numerical_dataset('gyroscope.csv', 'timestamp', ['x','y','z'], 'avg', 'gyr_phone_', True)
     dataset.add_numerical_dataset('barometer.csv', 'timestamp', ['x'], 'avg', 'bar_phone_', True)
     dataset.add_numerical_dataset('linear_accelerometer.csv', 'timestamp', ['x','y','z'], 'avg', 'lin_acc_phone_', True)
-    dataset.add_numerical_dataset('location.csv', 'timestamp', ['latitude','longitude','height', 'velocity', 'direction', 'horizontal_accuracy', 'vertical_accuracy'], 'avg', 'loc_phone_', True)
+    # dataset.add_numerical_dataset('location.csv', 'timestamp', ['latitude','longitude','height', 'velocity', 'direction', 'horizontal_accuracy', 'vertical_accuracy'], 'avg', 'loc_phone_', True)
     dataset.add_numerical_dataset('magnetometer.csv', 'timestamp', ['x','y','z'], 'avg', 'mag_phone_', True)
     dataset.add_numerical_dataset('proximity.csv', 'timestamp', ['distance'], 'avg', 'prox_phone_', True)
 
