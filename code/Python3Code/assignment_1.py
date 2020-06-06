@@ -71,9 +71,9 @@ for milliseconds_per_instance in GRANULARITIES:
     DataViz.plot_dataset_boxplot(dataset, ['acc_phone_x','acc_phone_y','acc_phone_z'])
 
     #Plot all data
-    DataViz.plot_dataset(dataset, ['acc_phone_', 'gyr_phone', 'bar_phone', 'lin_acc_phone', 'loc_phone', 'mag_phone', 'prox_phone', 'label'],
-                                 ['like', 'like', 'like', 'like', 'like', 'like', 'like', 'like'],
-                                 ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'point'])
+    # DataViz.plot_dataset(dataset, ['acc_phone_', 'gyr_phone', 'bar_phone', 'lin_acc_phone', 'loc_phone', 'mag_phone', 'prox_phone', 'label'],
+    #                              ['like', 'like', 'like', 'like', 'like', 'like', 'like', 'like'],
+    #                              ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'point'])
 
     # And print a summary of the dataset.
     util.print_statistics(dataset)
