@@ -1,0 +1,2 @@
+,labelStanding,labelSitting,labelWalking,acc_phone_x,acc_phone_y,acc_phone_z,gyr_phone_x,gyr_phone_y,gyr_phone_z,bar_phone_x,lin_acc_phone_x,lin_acc_phone_y,lin_acc_phone_z,loc_phone_latitude,loc_phone_longitude,loc_phone_height,loc_phone_velocity,loc_phone_direction,loc_phone_horizontal_accuracy,loc_phone_vertical_accuracy,mag_phone_x,mag_phone_y,mag_phone_z,prox_phone_distance
+1970-01-01 00:00:01.591361220,1,1,1,,,,,,,,,,,,,,,,,,,,,

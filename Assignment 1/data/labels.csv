@@ -1,0 +1,4 @@
+sensor_type,device_type,label,label_start,label_start_datetime,label_end,label_end_datetime
+interval_label,smartphone,Standing, 1591361220,05/06/2020 12:47:00,1591366439,05/06/2020 14:13:59
+interval_label,smartphone,Sitting,1591366449,05/06/2020 14:14:09,1591367240,05/06/2020 14:27:20
+interval_label,smartphone,Walking,1591367250,05/06/2020 14:27:30,1591368412,05/06/2020 14:46:52
