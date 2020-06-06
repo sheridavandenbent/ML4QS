@@ -7,6 +7,11 @@
 #                                                            #
 ##############################################################
 
+import numpy as np
+import pandas as pd
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
 # Simple class to impute missing values of a single columns.
 class ImputationMissingValues:
 
@@ -26,3 +31,16 @@ class ImputationMissingValues:
         # And fill the initial data points if needed:
         dataset[col] = dataset[col].fillna(method='bfill')
         return dataset
+
+    def impute_model_approach(self, dataset, col):
+        imp_mean = IterativeImputer(random_state=0, verbose=1, max_iter=100)
+        for i in dataset.columns:
+            if i == col:
+                continue
+            dataset = self.impute_interpolate(dataset, i)
+        print(dataset.shape)
+        imp_mean.fit(dataset)
+        print(dataset.columns)
+        X = imp_mean.transform(dataset)
+        X = pd.DataFrame(X, index=dataset.index, columns=dataset.columns)
+        return X

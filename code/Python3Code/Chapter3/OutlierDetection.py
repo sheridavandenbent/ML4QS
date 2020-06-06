@@ -13,6 +13,7 @@ from sklearn.mixture import GaussianMixture
 import numpy as np
 import pandas as pd
 import util.util as util
+from sklearn.neighbors import NearestNeighbors
 import copy
 
 # Class for outlier detection algorithms based on some distribution of the data. They
@@ -81,6 +82,18 @@ class DistanceBasedOutlierDetection:
         return pd.DataFrame(scipy.spatial.distance.squareform(util.distance(data_table.loc[:, cols], d_function)),
                             columns=data_table.index, index=data_table.index).astype('float32')
 
+    # Create table that contain k neighbors for every data point. Only cols are considered and the specified
+    # distance function is used. Also distances to these neighbors in form of array of distionaries is returned.
+    def k_nearest_neighbors(self, data_table, cols, k, d_function):
+
+        data_table_essential_columns = data_table.loc[:, cols].astype('float32')
+        # k+1 because we count also distance from point to itself.
+        nbrs = NearestNeighbors(n_neighbors=k+1, algorithm='kd_tree', metric=d_function).fit(data_table_essential_columns)
+        distances, indices = nbrs.kneighbors(data_table_essential_columns)
+
+        neighbor_distances = [dict(zip(x,y)) for (x,y) in zip(indices,distances)]
+        return neighbor_distances, indices
+
     # The most simple distance based algorithm. We assume a distance function, e.g. 'euclidean'
     # and a minimum distance of neighboring points and frequency of occurrence.
     def simple_distance_based(self, data_table, cols, d_function, dmin, fmin):
@@ -90,18 +103,24 @@ class DistanceBasedOutlierDetection:
         new_data_table = util.normalize_dataset(data_table.dropna(axis=0, subset=cols), cols)
 
         # Create the distance table first between all instances:
-        self.distances = self.distance_table(new_data_table, cols, d_function)
+        # self.distances = self.distance_table(new_data_table, cols, d_function)
+        print(int(len(new_data_table.index) * (1 - fmin)))
+        self.neighbor_distances, self.neighbors = self.k_nearest_neighbors(new_data_table, cols, int(len(new_data_table.index) * (1 - fmin)), d_function)
 
         mask = []
         # Pass the rows in our table.
         for i in range(0, len(new_data_table.index)):
             # Check what faction of neighbors are beyond dmin.
-            frac = (float(sum([1 for col_val in self.distances.iloc[i,:].tolist() if col_val > dmin]))/len(new_data_table.index))
+            # frac = (float(sum([1 for col_val in self.distances.iloc[i,:].tolist() if col_val > dmin]))/len(new_data_table.index))
             # Mark as an outlier if beyond the minimum frequency.
-            mask.append(frac > fmin)
+            # mask.append(frac > fmin)
+            max_distance_to_nearest_neighbour, _ = self.k_distance(i)
+            mask.append(dmin < max_distance_to_nearest_neighbour)
         data_mask = pd.DataFrame(mask, index=new_data_table.index, columns=['simple_dist_outlier'])
         data_table = pd.concat([data_table, data_mask], axis=1)
-        del self.distances
+        # del self.distances
+        del self.neighbors
+        del self.neighbor_distances
         return data_table
 
     # Computes the local outlier factor. K is the number of neighboring points considered, d_function
@@ -114,8 +133,8 @@ class DistanceBasedOutlierDetection:
 
         # Normalize the dataset first.
         new_data_table = util.normalize_dataset(data_table.dropna(axis=0, subset=cols), cols)
-        # Create the distance table first between all instances:
-        self.distances = self.distance_table(new_data_table, cols, d_function)
+        # Create nearest k neighbors table and distances t othem for ecery data point.
+        self.neighbor_distances, self.neighbors = self.k_nearest_neighbors(new_data_table, cols, k, d_function)
 
         outlier_factor = []
         # Compute the outlier score per row.
@@ -124,55 +143,67 @@ class DistanceBasedOutlierDetection:
             outlier_factor.append(self.local_outlier_factor_instance(i, k))
         data_outlier_probs = pd.DataFrame(outlier_factor, index=new_data_table.index, columns=['lof'])
         data_table = pd.concat([data_table, data_outlier_probs], axis=1)
-        del self.distances
+        del self.neighbors
+        del self.neighbor_distances
         return data_table
 
     # The distance between a row i1 and i2.
-    def reachability_distance(self, k, i1, i2):
+    def reachability_distance(self, i1, i2):
         # Compute the k-distance of i2.
-        k_distance_value, neighbors = self.k_distance(i2, k)
+        k_distance_value, neighbors = self.k_distance(i2)
         # The value is the max of the k-distance of i2 and the real distance.
-        return max([k_distance_value, self.distances.iloc[i1,i2]])
+        return max([k_distance_value, self.neighbor_distances[i1][i2]])
 
     # Compute the local reachability density for a row i, given a k-distance and set of neighbors.
-    def local_reachability_density(self, i, k, k_distance_i, neighbors_i):
+    def local_reachability_density(self, root_i, neighbors_i):
         # Set distances to neighbors to 0.
         reachability_distances_array = [0]*len(neighbors_i)
 
         # Compute the reachability distance between i and all neighbors.
         for i, neighbor in enumerate(neighbors_i):
-            reachability_distances_array[i] = self.reachability_distance(k, i, neighbor)
+            if neighbor == root_i:
+                continue
+            reachability_distances_array[i] = self.reachability_distance(root_i, neighbor)
         if not any(reachability_distances_array):
-            return float("inf")
+            return float(2.0)
         else:
             # Return the number of neighbors divided by the sum of the reachability distances.
             return len(neighbors_i) / sum(reachability_distances_array)
 
     # Compute the k-distance of a row i, namely the maximum distance within the k nearest neighbors
     # and return a tuple containing this value and the neighbors within this distance.
-    def k_distance(self, i, k):
-        # Simply look up the values in the distance table, select the min_pts^th lowest value and take the value pairs
-        # Take min_pts + 1 as we also have the instance itself in there.
-        neighbors = np.argpartition(np.array(self.distances.iloc[i,:]), k+1)[0:(k+1)].tolist()
-        if i in neighbors:
-            neighbors.remove(i)
-        return max(self.distances.iloc[i,neighbors]), neighbors
+    def k_distance(self, i):
+        neighbors = self.neighbors[i]
+        k_distance_value = max(self.neighbor_distances[i].values())
+        return k_distance_value, neighbors
 
     # Compute the local outlier score of our row i given a setting for k.
-    def local_outlier_factor_instance(self, i, k):
+    def local_outlier_factor_instance(self, root_i, k):
         # Compute the k-distance for i.
-        k_distance_value, neighbors = self.k_distance(i, k)
+        k_distance_value, neighbors = self.k_distance(root_i)
         # Computer the local reachability given the found k-distance and neighbors.
-        instance_lrd = self.local_reachability_density(i, k, k_distance_value, neighbors)
+        instance_lrd = self.local_reachability_density(root_i, neighbors)
         lrd_ratios_array = [0] * len(neighbors)
 
         # Computer the k-distances and local reachability density of the neighbors
         for i, neighbor in enumerate(neighbors):
-            k_distance_value_neighbor, neighbors_neighbor = self.k_distance(neighbor, k)
-            neighbor_lrd = self.local_reachability_density(neighbor, k, k_distance_value_neighbor, neighbors_neighbor)
-            # Store the ratio between the neighbor and the row i.
-            lrd_ratios_array[i] = neighbor_lrd / instance_lrd
+            if neighbor == root_i:
+                continue
+            k_distance_value_neighbor, neighbors_neighbor = self.k_distance(neighbor)
+            neighbor_lrd = self.local_reachability_density(neighbor, neighbors_neighbor)
+
+            # It may appear that both lrd values are infinity.
+            # In that case it is wise to assume that their proportion is 1.
+            if np.isinf(neighbor_lrd) and np.isinf(instance_lrd):
+                lrd_ratios_array[i] = 1.0
+            else:
+                # Store the ratio between the neighbor and the row i.
+                lrd_ratios_array[i] = neighbor_lrd / instance_lrd
 
         # Return the average ratio.
-        return sum(lrd_ratios_array) / len(neighbors)
-
+        sum_lrd_ratios = sum(lrd_ratios_array)
+        # It can happen that instance_lrd is not INF, but some of the neighbors have lrd == INF.
+        # In that case we assume that the lof is a very big number, lets say 1000.
+        if (np.isinf(sum_lrd_ratios)):
+            sum_lrd_ratios = 10.0
+        return sum_lrd_ratios / len(neighbors)
