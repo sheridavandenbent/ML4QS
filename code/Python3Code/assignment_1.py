@@ -38,7 +38,7 @@ RESULT_FNAME = sys.argv[2] if len(sys.argv) > 2 else 'chapter2_result.csv'
 
 # Set a granularity (the discrete step size of our time series data). We'll use a course-grained granularity of one
 # instance per minute, and a fine-grained one with four instances per second.
-GRANULARITIES = [10000, 20000]
+GRANULARITIES = [10000]
 
 # We can call Path.mkdir(exist_ok=True) to make any required directories if they don't already exist.
 [path.mkdir(exist_ok=True, parents=True) for path in [DATASET_PATH, RESULT_PATH]]
@@ -86,7 +86,7 @@ for milliseconds_per_instance in GRANULARITIES:
 
 
 # Make a table like the one shown in the book, comparing the two datasets produced.
-util.print_latex_table_statistics_two_datasets(datasets[0], datasets[1])
+# util.print_latex_table_statistics_two_datasets(datasets[0], datasets[1])
 
 # Finally, store the last dataset we generated (250 ms).
 dataset.to_csv(RESULT_PATH / RESULT_FNAME)
