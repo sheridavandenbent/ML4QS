@@ -38,7 +38,7 @@ RESULT_FNAME = sys.argv[2] if len(sys.argv) > 2 else 'chapter2_result.csv'
 
 # Set a granularity (the discrete step size of our time series data). We'll use a course-grained granularity of one
 # instance per minute, and a fine-grained one with four instances per second.
-GRANULARITIES = [10000]
+GRANULARITIES = [10000, 20000, 50000, 100000]
 
 # We can call Path.mkdir(exist_ok=True) to make any required directories if they don't already exist.
 [path.mkdir(exist_ok=True, parents=True) for path in [DATASET_PATH, RESULT_PATH]]
@@ -71,9 +71,9 @@ for milliseconds_per_instance in GRANULARITIES:
     DataViz.plot_dataset_boxplot(dataset, ['acc_phone_x','acc_phone_y','acc_phone_z'])
 
     #Plot all data
-    # DataViz.plot_dataset(dataset, ['acc_phone_', 'gyr_phone', 'bar_phone', 'lin_acc_phone', 'loc_phone', 'mag_phone', 'prox_phone', 'label'],
-    #                              ['like', 'like', 'like', 'like', 'like', 'like', 'like', 'like'],
-    #                              ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'point'])
+    DataViz.plot_dataset(dataset, ['acc_phone_', 'gyr_phone', 'bar_phone', 'lin_acc_phone', 'mag_phone', 'prox_phone', 'label'],
+                                 ['like', 'like', 'like', 'like', 'like', 'like', 'like'],
+                                 ['line', 'line', 'line', 'line', 'line', 'line', 'point'])
 
     # And print a summary of the dataset.
     util.print_statistics(dataset)

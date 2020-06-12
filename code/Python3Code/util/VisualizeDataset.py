@@ -81,8 +81,6 @@ class VisualizeDataset:
             max_values = []
             min_values = []
 
-
-
             # Pass through the relevant columns.
             for j in range(0, len(relevant_cols)):
                 # Create a mask to ignore the NaN values when plotting:
