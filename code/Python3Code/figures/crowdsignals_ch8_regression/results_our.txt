@@ -1,0 +1,11 @@
+Training set length is:  540
+Test set length is:  181
+#basic features:  12
+#PCA features:  4
+#time features:  44
+#frequency features:  45
+#cluster features:  1
+
+
+initial set & 0.2087\emph{( 0.0789 )}  & 0.2790\emph{( 0.1835 )} & 0.0504\emph{( 0.0389 )}  & 0.0505\emph{( 0.0928 )} & 0.0000\emph{( 0.0000 )}  & 0.0000\emph{( 0.0000 )}\\\hline
+Chapter 3 & 0.0120\emph{( 0.0214 )}  & 0.1163\emph{( 0.1375 )} & 0.0525\emph{( 0.0436 )}  & 0.0524\emph{( 0.0950 )} & 0.0000\emph{( 0.0000 )}  & 0.0000\emph{( 0.0000 )}\\\hline
