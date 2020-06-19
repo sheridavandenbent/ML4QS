@@ -101,7 +101,7 @@ DataViz.plot_xy(x=[range(1, len(selected_predictor_cols)+1)], y=[pc_values],
 
 # We select 7 as the best number of PC's as this explains most of the variance
 
-n_pcs = 3
+n_pcs = 4
 
 dataset = PCA.apply_pca(copy.deepcopy(dataset), selected_predictor_cols, n_pcs)
 
