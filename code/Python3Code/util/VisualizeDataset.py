@@ -131,7 +131,7 @@ class VisualizeDataset:
 
     def plot_dataset_boxplot(self, dataset, cols):
         plt.Figure(); dataset[cols].plot.box()
-        plt.ylim([-1,1])
+        plt.ylim([-3,3])
         self.save(plt)
         plt.show()
 

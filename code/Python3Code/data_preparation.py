@@ -41,46 +41,65 @@ RESULT_FNAME_LABELS = sys.argv[3] if len(sys.argv) > 3 else 'labels.csv'
 
 participant_file = "sub_6.csv"
 data_sample_rate = 50
-activities_folders = {"downstairs": "dws_11", "upstairs": "ups_12",
-                      "sitting": "sit_13", "standing": "std_14",
-                      "walking": "wlk_15", "jogging": "jog_16"}
-activities = list(activities_folders.keys())
-activities_breakpoint = {x : 0 for x in activities}
+datasets_folders = [("dws_1", "downstairs"),
+                    ("ups_3", "upstairs"),
+                    ("sit_5", "sitting"),
+                    ("std_6", "standing"),
+                    ("wlk_7", "walking"),
+                    ("jog_9", "jogging"),
+                    ("dws_11", "downstairs"),
+                    ("ups_12", "upstairs"),
+                    ("sit_13", "sitting"),
+                    ("std_14", "standing"),
+                    ("wlk_15", "walking"),
+                    ("jog_16", "jogging")]
+# activities_folders = {"downstairs": "dws_11", "upstairs": "ups_12",
+#                       "sitting": "sit_13", "standing": "std_14",
+#                       "walking": "wlk_15", "jogging": "jog_16"}
+activities = list(set([]))
 datasets = {}
 columns = None
 
-for (activity, dir_path) in activities_folders.items():
-    dataset = pd.read_csv(DATASET_PATH / dir_path / participant_file, index_col=0, skipinitialspace=True)
-    datasets[activity] = dataset
-    activities_breakpoint[activity] = int(1/2 * len(dataset))
-    columns = dataset.columns.tolist()
-
 final_dataset = pd.DataFrame(columns=columns)
 label_dataset = pd.DataFrame(columns=["label", "label_start", "label_end"])
+
 break_in_seconds = 1
 nanoseconds_in_second = 1000000000
-random.shuffle(activities)
-for i in activities:
-    begin_index = len(final_dataset)
-    dataset_to_add = datasets[i][0:activities_breakpoint[i]]
-    dataset_with_break = pd.DataFrame(index = [x for x in range(break_in_seconds * data_sample_rate)], columns=columns)
-    end_index = len(dataset_to_add) + begin_index
-    label_dataset = label_dataset.append({"label" : i, "label_start": begin_index * nanoseconds_in_second / data_sample_rate,
-                          "label_end": end_index * nanoseconds_in_second / data_sample_rate}, ignore_index=True)
-    final_dataset = final_dataset.append(dataset_to_add, ignore_index=True)
-    final_dataset = final_dataset.append(dataset_with_break, ignore_index=True)
-    # break
 
-random.shuffle(activities)
-for i in activities:
+for (dir_path, activity) in datasets_folders:
     begin_index = len(final_dataset)
-    dataset_to_add = datasets[i][activities_breakpoint[i]:]
-    dataset_with_break = pd.DataFrame(index = [x for x in range(break_in_seconds * data_sample_rate)], columns=columns)
+    dataset_to_add = pd.read_csv(DATASET_PATH / dir_path / participant_file, index_col=0, skipinitialspace=True)
+    columns = dataset_to_add.columns.tolist()
+    dataset_with_break = pd.DataFrame(index=[x for x in range(break_in_seconds * data_sample_rate)], columns=columns)
     end_index = len(dataset_to_add) + begin_index
-    label_dataset = label_dataset.append({"label" : i, "label_start": begin_index * nanoseconds_in_second / data_sample_rate,
-                          "label_end": end_index * nanoseconds_in_second / data_sample_rate}, ignore_index=True)
+    label_dataset = label_dataset.append(
+        {"label": activity, "label_start": begin_index * nanoseconds_in_second / data_sample_rate,
+         "label_end": end_index * nanoseconds_in_second / data_sample_rate}, ignore_index=True)
     final_dataset = final_dataset.append(dataset_to_add, ignore_index=True)
     final_dataset = final_dataset.append(dataset_with_break, ignore_index=True)
+
+# random.shuffle(activities)
+# for i in activities:
+#     begin_index = len(final_dataset)
+#     dataset_to_add = datasets[i][0:activities_breakpoint[i]]
+#     dataset_with_break = pd.DataFrame(index = [x for x in range(break_in_seconds * data_sample_rate)], columns=columns)
+#     end_index = len(dataset_to_add) + begin_index
+#     label_dataset = label_dataset.append({"label" : i, "label_start": begin_index * nanoseconds_in_second / data_sample_rate,
+#                           "label_end": end_index * nanoseconds_in_second / data_sample_rate}, ignore_index=True)
+#     final_dataset = final_dataset.append(dataset_to_add, ignore_index=True)
+#     final_dataset = final_dataset.append(dataset_with_break, ignore_index=True)
+# break
+
+# random.shuffle(activities)
+# for i in activities:
+#     begin_index = len(final_dataset)
+#     dataset_to_add = datasets[i][activities_breakpoint[i]:]
+#     dataset_with_break = pd.DataFrame(index = [x for x in range(break_in_seconds * data_sample_rate)], columns=columns)
+#     end_index = len(dataset_to_add) + begin_index
+#     label_dataset = label_dataset.append({"label" : i, "label_start": begin_index * nanoseconds_in_second / data_sample_rate,
+#                           "label_end": end_index * nanoseconds_in_second / data_sample_rate}, ignore_index=True)
+#     final_dataset = final_dataset.append(dataset_to_add, ignore_index=True)
+#     final_dataset = final_dataset.append(dataset_with_break, ignore_index=True)
 
 final_dataset.reset_index(inplace=True)
 # print(final_dataset["index"])
@@ -92,7 +111,7 @@ print(final_dataset.columns)
 
 final_dataset.to_csv(RESULT_PATH / RESULT_FNAME, index=False)
 label_dataset.to_csv(RESULT_PATH / RESULT_FNAME_LABELS, index=False)
-    # final_dataset.append
+# final_dataset.append
 
 # # Set a granularity (the discrete step size of our time series data). We'll use a course-grained granularity of one
 # # instance per minute, and a fine-grained one with four instances per second.
