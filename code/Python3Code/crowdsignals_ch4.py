@@ -58,7 +58,7 @@ selected_predictor_cols = [c for c in dataset.columns if not 'label' in c]
 dataset = NumAbs.abstract_numerical(dataset, selected_predictor_cols, ws, 'mean')
 dataset = NumAbs.abstract_numerical(dataset, selected_predictor_cols, ws, 'std')
 
-DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca1','pca2','pca3','pca4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
+DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca_1','pca_2','pca_3','pca_4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
 
 
 CatAbs = CategoricalAbstraction()
@@ -88,4 +88,6 @@ dataset = dataset.iloc[::skip_points,:]
 
 dataset.to_csv(DATA_PATH / RESULT_FNAME)
 
-DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca1','pca2','pca3','pca4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
+DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca_1','pca_2','pca_3','pca_4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
+
+
