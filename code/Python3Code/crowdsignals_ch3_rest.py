@@ -59,8 +59,8 @@ original_dataset = pd.read_csv(DATA_PATH / ORIG_DATASET_FNAME, index_col=0)
 original_dataset.index = pd.to_datetime(original_dataset.index)
 KalFilter = KalmanFilters()
 kalman_dataset = KalFilter.apply_kalman_filter(original_dataset, 'userAcceleration.x')
-DataViz.plot_imputed_values(kalman_dataset, ['original', 'kalman'], 'userAcceleration.x', kalman_dataset['userAcceleration.x_kalman'])
-DataViz.plot_dataset(kalman_dataset, ['userAcceleration.x', 'userAcceleration.x_kalman'], ['exact','exact'], ['line', 'line'])
+# DataViz.plot_imputed_values(kalman_dataset, ['original', 'kalman'], 'userAcceleration.x', kalman_dataset['userAcceleration.x_kalman'])
+# DataViz.plot_dataset(kalman_dataset, ['userAcceleration.x', 'userAcceleration.x_kalman'], ['exact','exact'], ['line', 'line'])
 
 # We ignore the Kalman filter output for now...
 
@@ -74,8 +74,8 @@ cutoff = 1.5
 
 # Let us study acc_phone_x:
 new_dataset = LowPass.low_pass_filter(copy.deepcopy(dataset), 'userAcceleration.x', fs, cutoff, order=10)
-DataViz.plot_dataset(new_dataset.iloc[int(0.4*len(new_dataset.index)):int(0.43*len(new_dataset.index)), :],
-                     ['userAcceleration.x', 'userAcceleration.x_lowpass'], ['exact','exact'], ['line', 'line'])
+# DataViz.plot_dataset(new_dataset.iloc[int(0.3*len(new_dataset.index)):int(0.5*len(new_dataset.index)), :],
+#                      ['userAcceleration.x', 'userAcceleration.x_lowpass'], ['exact','exact'], ['line', 'line'])
 
 # And not let us include all measurements that have a form of periodicity (and filter them):
 periodic_measurements = ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z']
@@ -93,6 +93,7 @@ PCA = PrincipalComponentAnalysis()
 selected_predictor_cols = [c for c in dataset.columns if (not ('label' in c)) and (not (c == 'hr_watch_rate'))]
 pc_values = PCA.determine_pc_explained_variance(dataset, selected_predictor_cols)
 
+# print(len(selected_predictor_cols)+1, pc_values)
 # Plot the variance explained.
 DataViz.plot_xy(x=[range(1, len(selected_predictor_cols)+1)], y=[pc_values],
                 xlabel='principal component number', ylabel='explained variance',
@@ -100,7 +101,7 @@ DataViz.plot_xy(x=[range(1, len(selected_predictor_cols)+1)], y=[pc_values],
 
 # We select 7 as the best number of PC's as this explains most of the variance
 
-n_pcs = 7
+n_pcs = 3
 
 dataset = PCA.apply_pca(copy.deepcopy(dataset), selected_predictor_cols, n_pcs)
 
