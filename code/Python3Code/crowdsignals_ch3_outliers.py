@@ -20,7 +20,7 @@ from pathlib import Path
 def main():
 
     # Set up file names and locations.
-    DATA_PATH = Path('./intermediate_datafiles/')
+    DATA_PATH = Path('./intermediate_datafiles/our_data')
     DATASET_FNAME = sys.argv[1] if len(sys.argv) > 1 else 'chapter2_result.csv'
     RESULT_FNAME = sys.argv[2] if len(sys.argv) > 2 else 'chapter3_result_outliers.csv'
 
@@ -42,7 +42,7 @@ def main():
     # Step 1: Let us see whether we have some outliers we would prefer to remove.
 
     # Determine the columns we want to experiment on.
-    outlier_columns = ['acc_phone_x', 'light_phone_lux']
+    outlier_columns = ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z']
 
     # Create the outlier classes.
     OutlierDistr = DistributionBasedOutlierDetection()
