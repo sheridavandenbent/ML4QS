@@ -19,7 +19,7 @@ from Chapter4.FrequencyAbstraction import FourierTransformation
 from Chapter4.TextAbstraction import TextAbstraction
 
 # Read the result from the previous chapter, and make sure the index is of the type datetime.
-DATA_PATH = Path('./intermediate_datafiles/')
+DATA_PATH = Path('./intermediate_datafiles/our_data')
 DATASET_FNAME = sys.argv[1] if len(sys.argv) > 1 else 'chapter3_result_final.csv'
 RESULT_FNAME = sys.argv[2] if len(sys.argv) > 2 else 'chapter4_result.csv'
 
@@ -48,17 +48,17 @@ window_sizes = [int(float(5000)/milliseconds_per_instance), int(float(0.5*60000)
 NumAbs = NumericalAbstraction()
 dataset_copy = copy.deepcopy(dataset)
 for ws in window_sizes:
-    dataset_copy = NumAbs.abstract_numerical(dataset_copy, ['acc_phone_x'], ws, 'mean')
-    dataset_copy = NumAbs.abstract_numerical(dataset_copy, ['acc_phone_x'], ws, 'std')
+    dataset_copy = NumAbs.abstract_numerical(dataset_copy, ['userAcceleration.x'], ws, 'mean')
+    dataset_copy = NumAbs.abstract_numerical(dataset_copy, ['userAcceleration.x'], ws, 'std')
 
-DataViz.plot_dataset(dataset_copy, ['acc_phone_x', 'acc_phone_x_temp_mean', 'acc_phone_x_temp_std', 'label'], ['exact', 'like', 'like', 'like'], ['line', 'line', 'line', 'points'])
+DataViz.plot_dataset(dataset_copy, ['userAcceleration.x', 'userAcceleration.x_temp_mean', 'userAcceleration.x_temp_std', 'label'], ['exact', 'like', 'like', 'like'], ['line', 'line', 'line', 'points'])
 
 ws = int(float(0.5*60000)/milliseconds_per_instance)
 selected_predictor_cols = [c for c in dataset.columns if not 'label' in c]
 dataset = NumAbs.abstract_numerical(dataset, selected_predictor_cols, ws, 'mean')
 dataset = NumAbs.abstract_numerical(dataset, selected_predictor_cols, ws, 'std')
 
-DataViz.plot_dataset(dataset, ['acc_phone_x', 'gyr_phone_x', 'hr_watch_rate', 'light_phone_lux', 'mag_phone_x', 'press_phone_', 'pca_1', 'label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'points'])
+DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca1','pca2','pca3','pca4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
 
 
 CatAbs = CategoricalAbstraction()
@@ -69,14 +69,12 @@ dataset = CatAbs.abstract_categorical(dataset, ['label'], ['like'], 0.03, int(fl
 FreqAbs = FourierTransformation()
 fs = float(1000)/milliseconds_per_instance
 
-periodic_predictor_cols = ['acc_phone_x','acc_phone_y','acc_phone_z','acc_watch_x','acc_watch_y','acc_watch_z','gyr_phone_x','gyr_phone_y',
-                           'gyr_phone_z','gyr_watch_x','gyr_watch_y','gyr_watch_z','mag_phone_x','mag_phone_y','mag_phone_z',
-                           'mag_watch_x','mag_watch_y','mag_watch_z']
-data_table = FreqAbs.abstract_frequency(copy.deepcopy(dataset), ['acc_phone_x'], int(float(10000)/milliseconds_per_instance), fs)
+periodic_predictor_cols = ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z']
+data_table = FreqAbs.abstract_frequency(copy.deepcopy(dataset), ['userAcceleration.x'], int(float(10000)/milliseconds_per_instance), fs)
 
 # Spectral analysis.
 
-DataViz.plot_dataset(data_table, ['acc_phone_x_max_freq', 'acc_phone_x_freq_weighted', 'acc_phone_x_pse', 'label'], ['like', 'like', 'like', 'like'], ['line', 'line', 'line','points'])
+DataViz.plot_dataset(data_table, ['userAcceleration.x_max_freq', 'userAcceleration.x_freq_weighted', 'userAcceleration.x_pse','label'], ['like', 'like', 'like', 'like'], ['line', 'line', 'line','points'])
 
 dataset = FreqAbs.abstract_frequency(dataset, periodic_predictor_cols, int(float(10000)/milliseconds_per_instance), fs)
 
@@ -90,4 +88,4 @@ dataset = dataset.iloc[::skip_points,:]
 
 dataset.to_csv(DATA_PATH / RESULT_FNAME)
 
-DataViz.plot_dataset(dataset, ['acc_phone_x', 'gyr_phone_x', 'hr_watch_rate', 'light_phone_lux', 'mag_phone_x', 'press_phone_', 'pca_1', 'label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'points'])
+DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca1','pca2','pca3','pca4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
