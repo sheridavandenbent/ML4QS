@@ -42,8 +42,8 @@ milliseconds_per_instance = (dataset.index[1] - dataset.index[0]).microseconds/1
 
 # First we focus on the time domain.
 
-# Set the window sizes to the number of instances representing 5 seconds, 30 seconds and 5 minutes
-window_sizes = [int(float(5000)/milliseconds_per_instance), int(float(0.5*60000)/milliseconds_per_instance), int(float(5*60000)/milliseconds_per_instance)]
+# Set the window sizes to the number of instances representing 1 seconds, 5 seconds and 3 minutes
+window_sizes = [int(float(1000)/milliseconds_per_instance), int(float(5000)/milliseconds_per_instance), int(float(0.3*60000)/milliseconds_per_instance)]
 
 NumAbs = NumericalAbstraction()
 dataset_copy = copy.deepcopy(dataset)
@@ -53,12 +53,12 @@ for ws in window_sizes:
 
 DataViz.plot_dataset(dataset_copy, ['userAcceleration.x', 'userAcceleration.x_temp_mean', 'userAcceleration.x_temp_std', 'label'], ['exact', 'like', 'like', 'like'], ['line', 'line', 'line', 'points'])
 
-ws = int(float(0.5*60000)/milliseconds_per_instance)
+ws = int(float(0.3*60000)/milliseconds_per_instance)
 selected_predictor_cols = [c for c in dataset.columns if not 'label' in c]
 dataset = NumAbs.abstract_numerical(dataset, selected_predictor_cols, ws, 'mean')
 dataset = NumAbs.abstract_numerical(dataset, selected_predictor_cols, ws, 'std')
 
-DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca_1','pca_2','pca_3','pca_4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
+DataViz.plot_dataset(dataset, ['gravity.x','gravity.y','gravity.z', 'userAcceleration.x','userAcceleration.y','userAcceleration.z','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like'], ['line', 'line', 'line', 'line', 'line', 'line', 'points'])
 
 
 CatAbs = CategoricalAbstraction()
@@ -69,7 +69,7 @@ dataset = CatAbs.abstract_categorical(dataset, ['label'], ['like'], 0.03, int(fl
 FreqAbs = FourierTransformation()
 fs = float(1000)/milliseconds_per_instance
 
-periodic_predictor_cols = ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z']
+periodic_predictor_cols = ['gravity.x','gravity.y','gravity.z','userAcceleration.x','userAcceleration.y','userAcceleration.z']
 data_table = FreqAbs.abstract_frequency(copy.deepcopy(dataset), ['userAcceleration.x'], int(float(10000)/milliseconds_per_instance), fs)
 
 # Spectral analysis.
@@ -88,6 +88,6 @@ dataset = dataset.iloc[::skip_points,:]
 
 dataset.to_csv(DATA_PATH / RESULT_FNAME)
 
-DataViz.plot_dataset(dataset, ['attitude.roll','attitude.pitch','attitude.yaw','gravity.x','gravity.y','gravity.z','rotationRate.x','rotationRate.y','rotationRate.z','userAcceleration.x','userAcceleration.y','userAcceleration.z','pca_1','pca_2','pca_3','pca_4','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like','like','like','like','like','like','like','like','like','like','like'], ['line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line', 'line','line', 'line', 'line', 'line', 'line' , 'points'])
+DataViz.plot_dataset(dataset, ['gravity.x','gravity.y','gravity.z', 'userAcceleration.x','userAcceleration.y','userAcceleration.z','label'], ['like', 'like', 'like', 'like', 'like', 'like', 'like'], ['line', 'line', 'line', 'line', 'line', 'line', 'points'])
 
 
